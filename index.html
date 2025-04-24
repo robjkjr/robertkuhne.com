@@ -1,0 +1,213 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags for character set and responsive viewport -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Page title -->
+  <title>Robert's Portfolio</title>
+  <!-- Link to CSS stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Link to Poppins font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header section with navigation -->
+  <header>
+    <nav>
+      <!-- Logo with the name "Robert" -->
+      <div class="logo">Robert</div>
+      <!-- Navigation links -->
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#highlights">Highlights</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero section with social media buttons and scroll arrow -->
+  <section id="home" class="hero">
+    <!-- Container for social media buttons -->
+    <div class="social-buttons">
+      <!-- Instagram 1 button -->
+      <a href="https://instagram.com" target="_blank" class="social-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <circle cx="12" cy="12" r="4"></circle>
+          <circle cx="18" cy="6" r="1"></circle>
+        </svg>
+        Instagram 1
+      </a>
+      <!-- Instagram 2 button -->
+      <a href="https://instagram.com" target="_blank" class="social-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <circle cx="12" cy="12" r="4"></circle>
+          <circle cx="18" cy="6" r="1"></circle>
+        </svg>
+        Instagram 2
+      </a>
+      <!-- TikTok button -->
+      <a href="https://tiktok.com" target="_blank" class="social-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+          <path d="M9 12a4 4 0 1 0 4 4V4c1.1 0 2 .9 2 2v3a4 4 0 0 0 4 4c0-2.2-1.8-4-4-4V6c0-2.2-1.8-4-4-4-2.2 0-4 1.8-4 4v8z"></path>
+        </svg>
+        TikTok
+      </a>
+      <!-- LinkedIn button -->
+      <a href="https://linkedin.com" target="_blank" class="social-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect x="2" y="9" width="4" height="12"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+        LinkedIn
+      </a>
+    </div>
+    <!-- Animated arrow to encourage scrolling -->
+    <div class="scroll-arrow">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+        <path d="M12 5v14M19 12l-7 7-7-7"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- About Me section -->
+  <section id="about" class="section">
+    <!-- Section title -->
+    <h2>About Me</h2>
+    <!-- Container for text and image -->
+    <div class="about-content">
+      <!-- Text about Robert -->
+      <div class="about-text">
+        <p>I'm Robert, an electrical and automation engineer who thrives on solving technical challenges. Outside the office, I’m chasing powder on the slopes, framing breathtaking landscapes, or editing videos that bring adventures to life.</p>
+        <p>My work is where precision meets passion—whether it’s designing automation systems or crafting visual stories. Scroll down to check out my highlights!</p>
+      </div>
+      <!-- Image of Robert -->
+      <img src="pictures/robert.jpg" alt="Robert outdoors" class="about-img">
+    </div>
+  </section>
+
+  <!-- Highlights section with photo gallery -->
+  <section id="highlights" class="section">
+    <!-- Section title -->
+    <h2>Highlights</h2>
+    <!-- Masonry container for photos -->
+    <div class="highlights-grid">
+      <!-- Photo 1 -->
+      <div class="highlight-item">
+        <img src="pictures/photo1.jpg" alt="Photo 1">
+      </div>
+      <!-- Photo 2 -->
+      <div class="highlight-item">
+        <img src="pictures/photo2.jpg" alt="Photo 2">
+      </div>
+      <!-- Photo 3 -->
+      <div class="highlight-item">
+        <img src="pictures/photo3.jpg" alt="Photo 3">
+      </div>
+      <!-- Photo 4 -->
+      <div class="highlight-item">
+        <img src="pictures/photo4.jpg" alt="Photo 4">
+      </div>
+      <!-- Photo 5 -->
+      <div class="highlight-item">
+        <img src="pictures/photo5.jpg" alt="Photo 5">
+      </div>
+      <!-- Photo 6 -->
+      <div class="highlight-item">
+        <img src="pictures/photo6.jpg" alt="Photo 6">
+      </div>
+      <!-- Photo 7 -->
+      <div class="highlight-item">
+        <img src="pictures/photo7.jpg" alt="Photo 7">
+      </div>
+      <!-- Photo 8 -->
+      <div class="highlight-item">
+        <img src="pictures/photo8.jpg" alt="Photo 8">
+      </div>
+      <!-- Photo 9 -->
+      <div class="highlight-item">
+        <img src="pictures/photo9.jpg" alt="Photo 9">
+      </div>
+      <!-- Photo 10 -->
+      <div class="highlight-item">
+        <img src="pictures/photo10.jpg" alt="Photo 10">
+      </div>
+      <!-- Photo 11 -->
+      <div class="highlight-item">
+        <img src="pictures/photo11.jpg" alt="Photo 11">
+      </div>
+      <!-- Photo 12 -->
+      <div class="highlight-item">
+        <img src="pictures/photo12.jpg" alt="Photo 12">
+      </div>
+      <!-- Photo 13 -->
+      <div class="highlight-item">
+        <img src="pictures/photo13.jpg" alt="Photo 13">
+      </div>
+      <!-- Photo 14 -->
+      <div class="highlight-item">
+        <img src="pictures/photo14.jpg" alt="Photo 14">
+      </div>
+      <!-- Photo 15 -->
+      <div class="highlight-item">
+        <img src="pictures/photo15.jpg" alt="Photo 15">
+      </div>
+      <!-- Photo 16 -->
+      <div class="highlight-item">
+        <img src="pictures/photo16.jpg" alt="Photo 16">
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer section -->
+  <footer>
+    <!-- Copyright notice -->
+    <p>© 2025 Robert. All rights reserved.</p>
+  </footer>
+
+  <!-- Link to JavaScript file -->
+  <script src="script.js"></script>
+</body>
+</html>
